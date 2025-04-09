@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vice City Radio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
+    body {
+      font-family: 'Permanent Marker', cursive;
+      background: linear-gradient(to bottom, #ff5fa2, #3f87a6);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 3rem;
+      color: #fffb96;
+      text-shadow: 2px 2px #000;
+      margin-bottom: 2rem;
+    }
+    .station-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    button {
+      background: #ff5fa2;
+      color: #fff;
+      border: none;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #ff84b5;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Vice City Radio</h1>
+  <div style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+    <button onclick="startRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Start Radio</button>
+    <button id="pauseResumeBtn" onclick="togglePauseResume()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Pause Radio</button>
+    <button onclick="stopRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Stop Radio</button>
+  </div>
+  <div class="station-buttons">
+    <button onclick="switchStation('emotion')">Emotion 98.3</button>
+    <button onclick="switchStation('flash')">Flash FM</button>
+    <button onclick="switchStation('wave')">Wave 103</button>
+    <button onclick="switchStation('wildstyle')">Wildstyle</button>
+    <button onclick="switchStation('vcpr')">VCPR</button>
+    <button onclick="switchStation('fever')">Fever 105</button>
+    <button onclick="switchStation('espantoso')">Radio Espantoso</button>
+    <button onclick="switchStation('radiox')">Radio X</button>
+  </div>
+
+  <!-- Example GitHub-hosted MP3 links -->
+  <audio id="emotion" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/emotion98.mp3" loop></audio>
+  <audio id="flash" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/flashfm.mp3" loop></audio>
+  <audio id="wave" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/wave103.mp3" loop></audio>
+  <audio id="wildstyle" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/wildstyle.mp3" loop></audio>
+  <audio id="vcpr" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/vcpr.mp3" loop></audio>
+  <audio id="fever" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/fever105.mp3" loop></audio>
+  <audio id="espantoso" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/espantoso.mp3" loop></audio>
+  <audio id="radiox" src="https://raw.githubusercontent.com/your-username/vicecity-radio/main/radiox.mp3" loop></audio>
+
+  <script>
+    const stations = [
+      'emotion', 'flash', 'wave', 'wildstyle', 'vcpr', 'fever', 'espantoso', 'radiox'
+    ];
+
+    let isPaused = false;
+
+    function startRadio() {
+      stations.forEach(id => {
+        const audio = document.getElementById(id);
+        audio.volume = 0;
+        audio.play().catch(e => console.log(`${id} failed to play:`, e));
+      });
+      switchStation('flash');
+      isPaused = false;
+      updatePauseButton();
+    }
+
+    function stopRadio() {
+      stations.forEach(id => {
+        const audio = document.getElementById(id);
+        audio.pause();
+        audio.currentTime = 0;
+      });
+      isPaused = false;
+      updatePauseButton();
+    }
+
+    function switchStation(activeId) {
+      stations.forEach(id => {
+        const audio = document.getElementById(id);
+        audio.volume = id === activeId ? 1 : 0;
+      });
+    }
+
+    function togglePauseResume() {
+      if (isPaused) {
+        stations.forEach(id => document.getElementById(id).play());
+        isPaused = false;
+      } else {
+        stations.forEach(id => document.getElementById(id).pause());
+        isPaused = true;
+      }
+      updatePauseButton();
+    }
+
+    function updatePauseButton() {
+      const btn = document.getElementById('pauseResumeBtn');
+      btn.textContent = isPaused ? 'Resume Radio' : 'Pause Radio';
+    }
+  </script>
+</body>
+</html>
