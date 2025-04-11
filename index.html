@@ -40,6 +40,7 @@
       font-size: 1rem;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
+      position: relative;
     }
     button:hover {
       background: #ff84b5;
@@ -50,29 +51,37 @@
       color: #000;
       box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
     }
-    #spinner {
+    .loading-indicator {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      width: 16px;
+      height: 16px;
+      background: url('https://i.gifer.com/ZZ5H.gif') no-repeat center center;
+      background-size: contain;
       display: none;
-      margin-bottom: 1rem;
+    }
+    .loading-indicator.active {
+      display: inline-block;
     }
   </style>
 </head>
 <body>
   <h1>Vice City Radio</h1>
-  <div id="spinner">🔄 Loading...</div>
   <div style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
     <button onclick="startRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Start Radio</button>
     <button id="pauseResumeBtn" onclick="togglePauseResume()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Pause Radio</button>
     <button onclick="stopRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Stop Radio</button>
   </div>
   <div class="station-buttons">
-    <button id="btn-emotion" onclick="switchStation('emotion')">Emotion 98.3</button>
-    <button id="btn-flash" onclick="switchStation('flash')">Flash FM</button>
-    <button id="btn-wave" onclick="switchStation('wave')">Wave 103</button>
-    <button id="btn-wildstyle" onclick="switchStation('wildstyle')">Wildstyle</button>
-    <button id="btn-vcpr" onclick="switchStation('vcpr')">VCPR</button>
-    <button id="btn-fever" onclick="switchStation('fever')">Fever 105</button>
-    <button id="btn-espantoso" onclick="switchStation('espantoso')">Radio Espantoso</button>
-    <button id="btn-vrock" onclick="switchStation('vrock')">V-Rock</button>
+    <button id="btn-emotion" onclick="switchStation('emotion')">Emotion 98.3 <span class="loading-indicator" id="loading-emotion"></span></button>
+    <button id="btn-flash" onclick="switchStation('flash')">Flash FM <span class="loading-indicator" id="loading-flash"></span></button>
+    <button id="btn-wave" onclick="switchStation('wave')">Wave 103 <span class="loading-indicator" id="loading-wave"></span></button>
+    <button id="btn-wildstyle" onclick="switchStation('wildstyle')">Wildstyle <span class="loading-indicator" id="loading-wildstyle"></span></button>
+    <button id="btn-vcpr" onclick="switchStation('vcpr')">VCPR <span class="loading-indicator" id="loading-vcpr"></span></button>
+    <button id="btn-fever" onclick="switchStation('fever')">Fever 105 <span class="loading-indicator" id="loading-fever"></span></button>
+    <button id="btn-espantoso" onclick="switchStation('espantoso')">Radio Espantoso <span class="loading-indicator" id="loading-espantoso"></span></button>
+    <button id="btn-vrock" onclick="switchStation('vrock')">V-Rock <span class="loading-indicator" id="loading-vrock"></span></button>
   </div>
 
   <audio id="emotion" src="emotion98-fixed.mp3" loop></audio>
@@ -107,6 +116,7 @@
         audio.pause();
         audio.currentTime = 0;
         document.getElementById(`btn-${id}`).classList.remove('active-button');
+        document.getElementById(`loading-${id}`).classList.remove('active');
       });
       isPaused = false;
       updatePauseButton();
@@ -115,7 +125,7 @@
     function switchStation(activeId) {
       if (isLoading) return;
       isLoading = true;
-      document.getElementById('spinner').style.display = 'block';
+      document.getElementById(`loading-${activeId}`).classList.add('active');
 
       currentStation = activeId;
       localStorage.setItem('last-station', activeId);
@@ -125,6 +135,7 @@
         if (id !== activeId) audio.pause();
         audio.volume = 1;
         document.getElementById(`btn-${id}`).classList.remove('active-button');
+        document.getElementById(`loading-${id}`).classList.remove('active');
       });
 
       document.getElementById(`btn-${activeId}`).classList.add('active-button');
@@ -151,12 +162,12 @@
           activeAudio.play()
             .then(() => {
               isLoading = false;
-              document.getElementById('spinner').style.display = 'none';
+              document.getElementById(`loading-${activeId}`).classList.remove('active');
             })
             .catch(e => {
               console.error(`${activeId} failed to play:`, e);
               isLoading = false;
-              document.getElementById('spinner').style.display = 'none';
+              document.getElementById(`loading-${activeId}`).classList.remove('active');
             });
         }, 50);
       };
