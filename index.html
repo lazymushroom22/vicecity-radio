@@ -45,24 +45,34 @@
       background: #ff84b5;
       transform: scale(1.05);
     }
+    .active-button {
+      background: linear-gradient(to right, #00ffe7, #00c3ff);
+      color: #000;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
+    #spinner {
+      display: none;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
   <h1>Vice City Radio</h1>
+  <div id="spinner">🔄 Loading...</div>
   <div style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
     <button onclick="startRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Start Radio</button>
     <button id="pauseResumeBtn" onclick="togglePauseResume()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Pause Radio</button>
     <button onclick="stopRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Stop Radio</button>
   </div>
   <div class="station-buttons">
-    <button onclick="switchStation('emotion')">Emotion 98.3</button>
-    <button onclick="switchStation('flash')">Flash FM</button>
-    <button onclick="switchStation('wave')">Wave 103</button>
-    <button onclick="switchStation('wildstyle')">Wildstyle</button>
-    <button onclick="switchStation('vcpr')">VCPR</button>
-    <button onclick="switchStation('fever')">Fever 105</button>
-    <button onclick="switchStation('espantoso')">Radio Espantoso</button>
-    <button onclick="switchStation('vrock')">V-Rock</button>
+    <button id="btn-emotion" onclick="switchStation('emotion')">Emotion 98.3</button>
+    <button id="btn-flash" onclick="switchStation('flash')">Flash FM</button>
+    <button id="btn-wave" onclick="switchStation('wave')">Wave 103</button>
+    <button id="btn-wildstyle" onclick="switchStation('wildstyle')">Wildstyle</button>
+    <button id="btn-vcpr" onclick="switchStation('vcpr')">VCPR</button>
+    <button id="btn-fever" onclick="switchStation('fever')">Fever 105</button>
+    <button id="btn-espantoso" onclick="switchStation('espantoso')">Radio Espantoso</button>
+    <button id="btn-vrock" onclick="switchStation('vrock')">V-Rock</button>
   </div>
 
   <audio id="emotion" src="emotion98-fixed.mp3" loop></audio>
@@ -80,6 +90,7 @@
     ];
 
     let isPaused = false;
+    let isLoading = false;
     let currentStation = 'flash';
 
     function startRadio() {
@@ -95,21 +106,28 @@
         const audio = document.getElementById(id);
         audio.pause();
         audio.currentTime = 0;
+        document.getElementById(`btn-${id}`).classList.remove('active-button');
       });
       isPaused = false;
       updatePauseButton();
     }
 
     function switchStation(activeId) {
+      if (isLoading) return;
+      isLoading = true;
+      document.getElementById('spinner').style.display = 'block';
+
       currentStation = activeId;
       localStorage.setItem('last-station', activeId);
 
-      // Pause all other stations (do not pause the one we're switching to)
       stations.forEach(id => {
         const audio = document.getElementById(id);
         if (id !== activeId) audio.pause();
         audio.volume = 1;
+        document.getElementById(`btn-${id}`).classList.remove('active-button');
       });
+
+      document.getElementById(`btn-${activeId}`).classList.add('active-button');
 
       const activeAudio = document.getElementById(activeId);
       const startTime = localStorage.getItem(`${activeId}-startTime`);
@@ -128,8 +146,18 @@
           localStorage.setItem(`${activeId}-startTime`, Date.now().toString());
           activeAudio.currentTime = 0;
         }
+
         setTimeout(() => {
-          activeAudio.play().catch(e => console.error(`${activeId} failed to play:`, e));
+          activeAudio.play()
+            .then(() => {
+              isLoading = false;
+              document.getElementById('spinner').style.display = 'none';
+            })
+            .catch(e => {
+              console.error(`${activeId} failed to play:`, e);
+              isLoading = false;
+              document.getElementById('spinner').style.display = 'none';
+            });
         }, 50);
       };
 
