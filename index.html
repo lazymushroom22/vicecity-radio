@@ -99,7 +99,7 @@
     ];
 
     let isPaused = false;
-    let isLoading = false;
+    let 
     let currentStation = 'flash';
 
     function startRadio() {
@@ -123,8 +123,6 @@
     }
 
     function switchStation(activeId) {
-      if (isLoading) return;
-      isLoading = true;
       document.getElementById(`loading-${activeId}`).classList.add('active');
 
       currentStation = activeId;
