@@ -104,9 +104,10 @@
       currentStation = activeId;
       localStorage.setItem('last-station', activeId);
 
+      // Pause all other stations (do not pause the one we're switching to)
       stations.forEach(id => {
         const audio = document.getElementById(id);
-        audio.pause();
+        if (id !== activeId) audio.pause();
         audio.volume = 1;
       });
 
