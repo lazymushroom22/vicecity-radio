@@ -74,7 +74,7 @@
   <audio id="espantoso" src="espantoso-fixed.mp3" loop></audio>
   <audio id="vrock" src="vrock-fixed.mp3" loop></audio>
 
-  <script>
+  <script defer>
     const stations = [
       'emotion', 'flash', 'wave', 'wildstyle', 'vcpr', 'fever', 'espantoso', 'vrock'
     ];
@@ -101,51 +101,45 @@
     }
 
     function switchStation(activeId) {
-  currentStation = activeId;
-  localStorage.setItem('last-station', activeId);
+      currentStation = activeId;
+      localStorage.setItem('last-station', activeId);
 
-  stations.forEach(id => {
-    const audio = document.getElementById(id);
-    audio.pause();
-    audio.volume = 1;
-  });
-
-  const activeAudio = document.getElementById(activeId);
-  const startTime = localStorage.getItem(`${activeId}-startTime`);
-  let offset = 0;
-
-  const setAndPlay = () => {
-    if (startTime) {
-      const elapsed = (Date.now() - parseInt(startTime)) / 1000;
-      offset = elapsed % activeAudio.duration;
-    } else {
-      localStorage.setItem(`${activeId}-startTime`, Date.now().toString());
-    }
-    activeAudio.currentTime = offset;
-    activeAudio.play().catch(e => console.log(`${activeId} failed to play:`, e));
-  };
-
-  if (activeAudio.readyState >= 1) {
-    setAndPlay();
-  } else {
-    activeAudio.addEventListener('loadedmetadata', setAndPlay, { once: true });
-    activeAudio.load();
-  }
-});
+      stations.forEach(id => {
+        const audio = document.getElementById(id);
+        audio.pause();
+        audio.volume = 1;
+      });
 
       const activeAudio = document.getElementById(activeId);
       const startTime = localStorage.getItem(`${activeId}-startTime`);
       let offset = 0;
 
-      if (startTime) {
-        const elapsed = (Date.now() - parseInt(startTime)) / 1000;
-        offset = elapsed % activeAudio.duration;
-      } else {
-        localStorage.setItem(`${activeId}-startTime`, Date.now().toString());
-      }
+      const setAndPlay = () => {
+        if (startTime) {
+          const elapsed = (Date.now() - parseInt(startTime)) / 1000;
+          if (!isNaN(activeAudio.duration) && activeAudio.duration > 0) {
+            activeAudio.currentTime = elapsed % activeAudio.duration;
+          } else {
+            console.warn(`${activeId} has invalid duration`);
+            activeAudio.currentTime = 0;
+          }
+          } else {
+            console.warn(`${activeId} has invalid duration`);
+            offset = 0;
+          }
+        } else {
+          localStorage.setItem(`${activeId}-startTime`, Date.now().toString());
+        }
+        activeAudio.currentTime = offset;
+        activeAudio.play().catch(e => console.error(`${activeId} failed to play:`, e));
+      };
 
-      activeAudio.currentTime = offset;
-      activeAudio.play().catch(e => console.log(`${activeId} failed to play:`, e));
+      if (activeAudio.readyState >= 1) {
+        setAndPlay();
+      } else {
+        activeAudio.addEventListener('loadedmetadata', setAndPlay, { once: true });
+        activeAudio.load();
+      }
     }
 
     function togglePauseResume() {
