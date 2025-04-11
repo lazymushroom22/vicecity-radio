@@ -69,9 +69,9 @@
 <body>
   <h1>Vice City Radio</h1>
   <div style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-    <button onclick="startRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Start Radio</button>
-    <button id="pauseResumeBtn" onclick="togglePauseResume()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Pause Radio</button>
-    <button onclick="stopRadio()" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Stop Radio</button>
+    <button id="startButton" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Start Radio</button>
+    <button id="pauseResumeBtn" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Pause Radio</button>
+    <button id="stopButton" style="font-size: 1.2rem; padding: 0.75rem 2rem;">Stop Radio</button>
   </div>
   <div class="station-buttons">
     <button id="btn-emotion" onclick="switchStation('emotion')">Emotion 98.3 <span class="loading-indicator" id="loading-emotion"></span></button>
@@ -94,6 +94,11 @@
   <audio id="vrock" src="vrock-fixed.mp3" loop></audio>
 
   <script defer>
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('startButton').addEventListener('click', startRadio);
+      document.getElementById('pauseResumeBtn').addEventListener('click', togglePauseResume);
+      document.getElementById('stopButton').addEventListener('click', stopRadio);
+    });
     const stations = [
       'emotion', 'flash', 'wave', 'wildstyle', 'vcpr', 'fever', 'espantoso', 'vrock'
     ];
