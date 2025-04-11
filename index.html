@@ -95,6 +95,11 @@
 
   <script defer>
     window.addEventListener('DOMContentLoaded', () => {
+      // Preload audio metadata to speed up switching
+      stations.forEach(id => {
+        const audio = document.getElementById(id);
+        audio.load();
+      });
       document.getElementById('startButton').addEventListener('click', startRadio);
       document.getElementById('pauseResumeBtn').addEventListener('click', togglePauseResume);
       document.getElementById('stopButton').addEventListener('click', stopRadio);
