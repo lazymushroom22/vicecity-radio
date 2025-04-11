@@ -123,14 +123,10 @@
             console.warn(`${activeId} has invalid duration`);
             activeAudio.currentTime = 0;
           }
-          } else {
-            console.warn(`${activeId} has invalid duration`);
-            offset = 0;
-          }
         } else {
           localStorage.setItem(`${activeId}-startTime`, Date.now().toString());
+          activeAudio.currentTime = 0;
         }
-        activeAudio.currentTime = offset;
         activeAudio.play().catch(e => console.error(`${activeId} failed to play:`, e));
       };
 
