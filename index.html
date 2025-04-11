@@ -65,7 +65,6 @@
     <button onclick="switchStation('vrock')">V-Rock</button>
   </div>
 
-  <!-- Updated to use fixed/working mp3 files -->
   <audio id="emotion" src="emotion98-fixed.mp3" loop></audio>
   <audio id="flash" src="flashfm-fixed.mp3" loop></audio>
   <audio id="wave" src="wave103-fixed.mp3" loop></audio>
@@ -81,20 +80,18 @@
     ];
 
     let isPaused = false;
+    let currentStation = 'flash';
 
     function startRadio() {
-      stations.forEach(id => {
-        const audio = document.getElementById(id);
-        audio.volume = 0;
-        audio.play().catch(e => console.log(`${id} failed to play:`, e));
-      });
-      switchStation('flash');
+      const last = localStorage.getItem('last-station') || 'flash';
+      switchStation(last);
       isPaused = false;
       updatePauseButton();
     }
 
     function stopRadio() {
       stations.forEach(id => {
+        localStorage.removeItem(`${id}-startTime`);
         const audio = document.getElementById(id);
         audio.pause();
         audio.currentTime = 0;
@@ -104,18 +101,37 @@
     }
 
     function switchStation(activeId) {
+      currentStation = activeId;
+      localStorage.setItem('last-station', activeId);
+
       stations.forEach(id => {
         const audio = document.getElementById(id);
-        audio.volume = id === activeId ? 1 : 0;
+        audio.pause();
+        audio.volume = 1;
       });
+
+      const activeAudio = document.getElementById(activeId);
+      const startTime = localStorage.getItem(`${activeId}-startTime`);
+      let offset = 0;
+
+      if (startTime) {
+        const elapsed = (Date.now() - parseInt(startTime)) / 1000;
+        offset = elapsed % activeAudio.duration;
+      } else {
+        localStorage.setItem(`${activeId}-startTime`, Date.now().toString());
+      }
+
+      activeAudio.currentTime = offset;
+      activeAudio.play().catch(e => console.log(`${activeId} failed to play:`, e));
     }
 
     function togglePauseResume() {
+      const audio = document.getElementById(currentStation);
       if (isPaused) {
-        stations.forEach(id => document.getElementById(id).play());
+        audio.play();
         isPaused = false;
       } else {
-        stations.forEach(id => document.getElementById(id).pause());
+        audio.pause();
         isPaused = true;
       }
       updatePauseButton();
