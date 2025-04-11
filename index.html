@@ -127,7 +127,9 @@
           localStorage.setItem(`${activeId}-startTime`, Date.now().toString());
           activeAudio.currentTime = 0;
         }
-        activeAudio.play().catch(e => console.error(`${activeId} failed to play:`, e));
+        setTimeout(() => {
+          activeAudio.play().catch(e => console.error(`${activeId} failed to play:`, e));
+        }, 50);
       };
 
       if (activeAudio.readyState >= 1) {
