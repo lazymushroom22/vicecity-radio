@@ -41,6 +41,9 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
       position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     button:hover {
       background: #ff84b5;
@@ -52,12 +55,9 @@
       box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
     }
     .loading-indicator {
-      position: absolute;
-      top: 4px;
-      right: 6px;
       width: 16px;
       height: 16px;
-      background: url('https://i.gifer.com/ZZ5H.gif') no-repeat center center;
+      background: url('https://raw.githubusercontent.com/catamphetamine/react-spinner/master/images/spinner.gif') no-repeat center center;
       background-size: contain;
       display: none;
     }
