@@ -140,6 +140,9 @@
   <audio id="vrock" src="vrock-fixed.mp3" loop></audio>
 
   <script defer>
+    const stations = [
+      'emotion', 'flash', 'wave', 'wildstyle', 'vcpr', 'fever', 'espantoso', 'vrock'
+    ];
     window.addEventListener('DOMContentLoaded', () => {
       // Preload audio metadata to speed up switching
       stations.forEach(id => {
@@ -150,10 +153,6 @@
       document.getElementById('pauseResumeBtn').addEventListener('click', togglePauseResume);
       document.getElementById('stopButton').addEventListener('click', stopRadio);
     });
-    const stations = [
-      'emotion', 'flash', 'wave', 'wildstyle', 'vcpr', 'fever', 'espantoso', 'vrock'
-    ];
-
     let isPaused = false;
     let currentStation = 'flash';
 
@@ -244,7 +243,7 @@
 
     function updatePauseButton() {
       const btn = document.getElementById('pauseResumeBtn');
-      btn.textContent = isPaused ? 'Resume Radio' : 'Pause Radio';
+      btn.textContent = isPaused ? '▶' : '❚❚';
     }
   </script>
 </body>
