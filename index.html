@@ -96,9 +96,6 @@
     <button id="startButton" style="width: 80px; height: 80px; background: #00ffe7; color: black; font-weight: bold; font-size: 1.8rem; box-shadow: 0 0 12px rgba(0,255,255,0.5); border-radius: 8px;">
       ▶
     </button>
-    <button id="pauseResumeBtn" style="width: 80px; height: 80px; background: #fffb96; color: black; font-weight: bold; font-size: 1.8rem; box-shadow: 0 0 12px rgba(255,255,150,0.5); border-radius: 8px;">
-      ❚❚
-    </button>
     <button id="stopButton" style="width: 80px; height: 80px; background: #ff5fa2; color: white; font-weight: bold; font-size: 1.8rem; box-shadow: 0 0 12px rgba(255,95,162,0.5); border-radius: 8px;">
       ■
     </button>
@@ -149,19 +146,12 @@
         const audio = document.getElementById(id);
         audio.load();
       });
-      document.getElementById('startButton').addEventListener('click', startRadio);
-      document.getElementById('pauseResumeBtn').addEventListener('click', togglePauseResume);
+      document.getElementById('startButton').addEventListener('click', toggleStartPause);
       document.getElementById('stopButton').addEventListener('click', stopRadio);
     });
     let isPaused = false;
+let hasStarted = false;
     let currentStation = 'flash';
-
-    function startRadio() {
-      const last = localStorage.getItem('last-station') || 'flash';
-      switchStation(last);
-      isPaused = false;
-      updatePauseButton();
-    }
 
     function stopRadio() {
       stations.forEach(id => {
@@ -177,6 +167,10 @@
     }
 
     function switchStation(activeId) {
+  const button = document.getElementById('startButton');
+  hasStarted = true;
+  isPaused = false;
+  button.textContent = '❚❚';
       document.getElementById(`loading-${activeId}`).classList.add('active');
 
       currentStation = activeId;
@@ -228,23 +222,26 @@
         activeAudio.load();
       }
     }
+    function toggleStartPause() {
+  const button = document.getElementById('startButton');
+  const audio = document.getElementById(currentStation);
 
-    function togglePauseResume() {
-      const audio = document.getElementById(currentStation);
-      if (isPaused) {
-        audio.play();
-        isPaused = false;
-      } else {
-        audio.pause();
-        isPaused = true;
-      }
-      updatePauseButton();
-    }
-
-    function updatePauseButton() {
-      const btn = document.getElementById('pauseResumeBtn');
-      btn.textContent = isPaused ? '▶' : '❚❚';
-    }
-  </script>
+  if (!hasStarted) {
+    const last = localStorage.getItem('last-station') || 'flash';
+    switchStation(last);
+    isPaused = false;
+    hasStarted = true;
+    button.textContent = '❚❚';
+  } else if (isPaused) {
+    audio.play();
+    isPaused = false;
+    button.textContent = '❚❚';
+  } else {
+    audio.pause();
+    isPaused = true;
+    button.textContent = '▶';
+  }
+}
+</script>
 </body>
 </html>
