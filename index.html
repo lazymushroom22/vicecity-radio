@@ -195,7 +195,6 @@
 
       const activeAudio = document.getElementById(activeId);
       const startTime = localStorage.getItem(`${activeId}-startTime`);
-      let offset = 0;
 
       const setAndPlay = () => {
         if (startTime) {
@@ -214,12 +213,10 @@
         setTimeout(() => {
           activeAudio.play()
             .then(() => {
-              isLoading = false;
               document.getElementById(`loading-${activeId}`).classList.remove('active');
             })
             .catch(e => {
               console.error(`${activeId} failed to play:`, e);
-              isLoading = false;
               document.getElementById(`loading-${activeId}`).classList.remove('active');
             });
         }, 50);
